@@ -17,9 +17,9 @@ Para tal é necessário combiná-los com "compridos" da mesma cor sem que o fras
 O jogador pode selecionar a velocidade a que o "comprimido" se desloca.
 
 #### UI
+Semelhante a:
+
 ![UI](https://github.com/eunicejamorim/dr-mario/blob/master/NES_01.gif)
-
-
 
 ### Pacotes
 
