@@ -27,9 +27,9 @@ Semelhante a:
 
 #### Tarefas
 
-1. desenhar/carregar níveis
-1. desenhar a matriz do nível
-1. ler teclas e mover as peças
-2. verificar se jogador chegou ao fim do nível
+1. desenhar gráficos - em processo
+2. desenhar a matriz do nível
+3. ler teclas e mover as peças
+4. verificar se jogador chegou ao fim do nível
 
 18 de novembro de 2019
