@@ -7,16 +7,24 @@ Created on Mon Nov 25 11:40:02 2019
 
 import pygame
 
-pygame.init
+pygame.init()
 
 screen = pygame.display.set_mode((600, 700))
-
-halfpill = pygame.image.load("imbitmap.png")
+halfpill = pygame.image.load("smaller pill.png")
+x = 300
+y = 350
 
 running = True
-
+clock = pygame.time.Clock()
 while running:
+    # desenhar
+    screen.blit(halfpill, (0,0))     
+    pygame.display.flip()
+    # eventos
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
             pygame.display.quit()
+
+pygame.quit()
+    
