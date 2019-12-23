@@ -15,7 +15,7 @@ Created on Mon Nov 25 11:40:02 2019
 """
 X. nao deixar sair das paredes
 2. ter duas variaveis para a cor do jogador (lista com dois elementos)
-3. angulo do jogador (1-4)
+x. angulo do jogador (1-4)
 4. desenhar
 """
 
@@ -76,9 +76,12 @@ MARGIN_TOP = 0
 FALL_TIME = 1000  # ms
 
 last_fall_time = 0
-player_row = 0
-player_col = 0
-player_color = random.randrange(1, 4+1)
+player_row_1 = 0
+player_col_1 = 0
+player_row_2 = 0
+player_col_2 = 1
+player_color_1 = random.randrange(1, 4+1)
+player_color_2 = random.randrange(1, 4+1)
 
 clock = pygame.time.Clock()
   
@@ -91,31 +94,60 @@ while running:
         if event.type == pygame.QUIT:
             running = False
         if event.type == pygame.KEYDOWN:
-            if event.key == pygame.K_LEFT and player_col>=0:
-                if player_col > 0:
-                    player_col -= 1
-            if event.key == pygame.K_RIGHT and player_col<=6 :
-                if player_col < len(matrix[0]):
-                    player_col += 1
+            if event.key == pygame.K_LEFT and (player_col_1>=0 and player_col_2>=0):
+                if player_col_1 > 0 and player_col_2 > 0:
+                    player_col_1 -= 1
+                    player_col_2 -= 1
+            if event.key == pygame.K_RIGHT and (player_col_1<=6 and player_col_2<=6):
+                if player_col_1 < len(matrix[0]) and player_col_2 < len(matrix[0]) :
+                    player_col_1 += 1
+                    player_col_2 += 1
             if event.key == pygame.K_DOWN:
                 down_pressed = True
+            #rodar 
+            if event.key == pygame.K_SPACE:
+                if player_row_1 == player_row_2 and player_col_1 < player_col_2 and matrix[player_row_1 + 1][player_col_1] == 0 and player_row_1 != 12:
+                    player_row_2 += 1
+                    player_col_2 -= 1
+                else:
+                    if player_col_1 == player_col_2 and player_row_1 < player_row_2 and player_col_1 > 0 and matrix[player_row_1][player_col_1 - 1] == 0:
+                        player_row_2 -= 1
+                        player_col_2 -= 1
+                    else:
+                        if player_row_1 == player_row_2 and player_col_1 > player_col_2 and matrix[player_row_1 +1][player_col_1] == 0 and player_row_1 > 0:
+                            player_row_2 -= 1
+                            player_col_2 += 1
+                        else:
+                            if player_col_1 == player_col_2 and player_row_1 > player_row_2  and player_col_1 < 7 and matrix[player_row_1][player_col_1 + 1] == 0:
+                                player_row_2 += 1
+                                player_col_2 += 1
 
     # movimento
     if (pygame.time.get_ticks() - last_fall_time) > FALL_TIME or down_pressed:
-        if matrix[player_row+1][player_col] == 0 and player_row + 1 != 13:
-            player_row += 1
+        if matrix[player_row_1+1][player_col_1] == 0 and player_row_1 + 1 != 13 and matrix[player_row_2+1][player_col_2] == 0 and player_row_2 + 1 != 13 :
+            player_row_1 += 1
+            player_row_2 += 1
         else:  # colisao
-            if player_row + 1 == 13 and matrix[player_row+1][player_col] == 0:
-                player_row += 1
-                matrix[player_row][player_col] = player_color
-                player_row = 0
-                player_col = 0
-                player_color = random.randrange(1, 4+1)
+            if player_row_1 + 1 == 13 and matrix[player_row_1+1][player_col_1] == 0:
+                player_row_1 += 1
+                player_row_2 += 1
+                matrix[player_row_1][player_col_1] = player_color_1
+                matrix[player_row_2][player_col_2] = player_color_2
+                player_row_1 = 0
+                player_col_1 = 0
+                player_row_2 = 0
+                player_col_2 = 1
+                player_color_1 = random.randrange(1, 4+1)
+                player_color_2 = random.randrange(1, 4+1)
             else:
-                matrix[player_row][player_col] = player_color
-                player_row = 0
-                player_col = 0
-                player_color = random.randrange(1, 4+1)
+                matrix[player_row_1][player_col_1] = player_color_1
+                matrix[player_row_2][player_col_2] = player_color_2
+                player_row_1 = 0
+                player_col_1 = 0
+                player_row_2 = 0
+                player_col_2 = 1
+                player_color_1 = random.randrange(1, 4+1)
+                player_color_2 = random.randrange(1, 4+1)
         last_fall_time = pygame.time.get_ticks()
 
     # encontrar linhas/colunas 4 iguais
@@ -147,9 +179,14 @@ while running:
             y = row*TILE_WIDTH+MARGIN_TOP
             pygame.draw.rect(screen, color, (x+2, y+2, TILE_WIDTH-4, TILE_WIDTH-4))
             #screen.blit(teste, (50, 50))  # desenhar imagem
-    x = player_col*TILE_WIDTH+MARGIN_LEFT
-    y = player_row*TILE_WIDTH+MARGIN_TOP
-    pygame.draw.circle(screen, COLORS[player_color], (x+TILE_WIDTH//2, y+TILE_WIDTH//2), TILE_WIDTH//2)
+    #desenhar primeiro círculo
+    x = player_col_1*TILE_WIDTH+MARGIN_LEFT
+    y = player_row_1*TILE_WIDTH+MARGIN_TOP
+    pygame.draw.circle(screen, COLORS[player_color_1], (x+TILE_WIDTH//2, y+TILE_WIDTH//2), TILE_WIDTH//2)
+    #desenhar segundo círculo
+    x_sec = (player_col_2)*TILE_WIDTH+MARGIN_LEFT
+    y_sec = player_row_2 *TILE_WIDTH+MARGIN_TOP
+    pygame.draw.circle(screen, COLORS[player_color_2], (x_sec+TILE_WIDTH//2, y_sec+TILE_WIDTH//2), TILE_WIDTH//2)
 
     pygame.display.flip()
 
