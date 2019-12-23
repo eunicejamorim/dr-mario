@@ -26,7 +26,7 @@ pygame.init()
 
 screen = pygame.display.set_mode((600, 700))
 #halfpill = pygame.image.load("smaller pill.png")
-teste  = pygame.image.load("50 pixeis.png")
+#teste  = pygame.image.load("50 pixeis.png")
 running = True
 
 matrix = [
@@ -102,13 +102,20 @@ while running:
 
     # movimento
     if (pygame.time.get_ticks() - last_fall_time) > FALL_TIME or down_pressed:
-        if matrix[player_row+1][player_col] == 0:
+        if matrix[player_row+1][player_col] == 0 and player_row + 1 != 13:
             player_row += 1
         else:  # colisao
-            matrix[player_row][player_col] = player_color
-            player_row = 0
-            player_col = 0
-            player_color = random.randrange(1, 4+1)
+            if player_row + 1 == 13 and matrix[player_row+1][player_col] == 0:
+                player_row += 1
+                matrix[player_row][player_col] = player_color
+                player_row = 0
+                player_col = 0
+                player_color = random.randrange(1, 4+1)
+            else:
+                matrix[player_row][player_col] = player_color
+                player_row = 0
+                player_col = 0
+                player_color = random.randrange(1, 4+1)
         last_fall_time = pygame.time.get_ticks()
 
     # encontrar linhas/colunas 4 iguais
