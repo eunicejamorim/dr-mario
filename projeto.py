@@ -66,6 +66,10 @@ is_pill = [
 '''
 
 COLORS = {1: (0, 255, 0), 2: (255, 0, 0), 3: (0, 0, 255), 4: (255, 0, 255)}
+
+CON_ROW = {'r': 0, 'l': 0, 'u': -1, 'd': 1, 0: 0, 'v': 0}
+CON_COL = {'r': 1, 'l': -1, 'u': 0, 'd': 0, 0: 0, 'v': 0}
+
 TILE_WIDTH = 50
 GRID_WIDTH = len(matrix[0])
 GRID_HEIGHT = len(matrix)
@@ -83,6 +87,11 @@ player_col_2 = 1
 player_color_1 = random.randrange(1, 4+1)
 player_color_2 = random.randrange(1, 4+1)
 
+next_player_color_1 = random.randrange(1, 4+1)
+next_player_color_2 = random.randrange(1, 4+1)
+
+# pygame.font.get_fonts()
+font = pygame.font.SysFont('arial', 18) 
 clock = pygame.time.Clock()
   
 while running:
@@ -95,11 +104,11 @@ while running:
             running = False
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_LEFT and (player_col_1>=0 and player_col_2>=0):
-                if player_col_1 > 0 and player_col_2 > 0:
+                if player_col_1 > 0 and player_col_2 > 0 and matrix[player_row_1][player_col_1 -1] == matrix[player_row_2][player_col_2 -1] == 0:
                     player_col_1 -= 1
                     player_col_2 -= 1
             if event.key == pygame.K_RIGHT and (player_col_1<=6 and player_col_2<=6):
-                if player_col_1 < len(matrix[0]) and player_col_2 < len(matrix[0]) :
+                if player_col_1 < len(matrix[0]) and player_col_2 < len(matrix[0]) and matrix[player_row_1][player_col_1 +1] == matrix[player_row_2][player_col_2 +1] == 0:
                     player_col_1 += 1
                     player_col_2 += 1
             if event.key == pygame.K_DOWN:
@@ -131,23 +140,16 @@ while running:
             if player_row_1 + 1 == 13 and matrix[player_row_1+1][player_col_1] == 0:
                 player_row_1 += 1
                 player_row_2 += 1
-                matrix[player_row_1][player_col_1] = player_color_1
-                matrix[player_row_2][player_col_2] = player_color_2
-                player_row_1 = 0
-                player_col_1 = 0
-                player_row_2 = 0
-                player_col_2 = 1
-                player_color_1 = random.randrange(1, 4+1)
-                player_color_2 = random.randrange(1, 4+1)
-            else:
-                matrix[player_row_1][player_col_1] = player_color_1
-                matrix[player_row_2][player_col_2] = player_color_2
-                player_row_1 = 0
-                player_col_1 = 0
-                player_row_2 = 0
-                player_col_2 = 1
-                player_color_1 = random.randrange(1, 4+1)
-                player_color_2 = random.randrange(1, 4+1)
+            matrix[player_row_1][player_col_1] = player_color_1
+            matrix[player_row_2][player_col_2] = player_color_2
+            player_row_1 = 0
+            player_col_1 = 0
+            player_row_2 = 0
+            player_col_2 = 1
+            player_color_1 = next_player_color_1
+            player_color_2 = next_player_color_2
+            next_player_color_1 = random.randrange(1, 4+1)
+            next_player_color_2 = random.randrange(1, 4+1)
         last_fall_time = pygame.time.get_ticks()
 
     # encontrar linhas/colunas 4 iguais
@@ -169,6 +171,7 @@ while running:
     ####################################################################
     # desenhar
     screen.fill((0, 0, 0))
+    pygame.draw.rect(screen, (255, 255, 255), (MARGIN_LEFT+2, MARGIN_TOP+2, TILE_WIDTH*len(matrix[0])-4, TILE_WIDTH*len(matrix)-4))
 
     #screen.blit(halfpill, (0,0))
     for col in range(8):
@@ -178,15 +181,28 @@ while running:
             x = col*TILE_WIDTH+MARGIN_LEFT
             y = row*TILE_WIDTH+MARGIN_TOP
             pygame.draw.rect(screen, color, (x+2, y+2, TILE_WIDTH-4, TILE_WIDTH-4))
+            
+            text = font.render(str(matrix[row][col]), True, (255, 255, 255))
+            screen.blit(text, (x+2, y+2))
+
             #screen.blit(teste, (50, 50))  # desenhar imagem
     #desenhar primeiro círculo
     x = player_col_1*TILE_WIDTH+MARGIN_LEFT
     y = player_row_1*TILE_WIDTH+MARGIN_TOP
     pygame.draw.circle(screen, COLORS[player_color_1], (x+TILE_WIDTH//2, y+TILE_WIDTH//2), TILE_WIDTH//2)
     #desenhar segundo círculo
-    x_sec = (player_col_2)*TILE_WIDTH+MARGIN_LEFT
-    y_sec = player_row_2 *TILE_WIDTH+MARGIN_TOP
-    pygame.draw.circle(screen, COLORS[player_color_2], (x_sec+TILE_WIDTH//2, y_sec+TILE_WIDTH//2), TILE_WIDTH//2)
+    x = (player_col_2)*TILE_WIDTH+MARGIN_LEFT
+    y = player_row_2 *TILE_WIDTH+MARGIN_TOP
+    pygame.draw.circle(screen, COLORS[player_color_2], (x+TILE_WIDTH//2, y+TILE_WIDTH//2), TILE_WIDTH//2)
+
+    # NEXT
+    x = MARGIN_LEFT + len(matrix[0])*TILE_WIDTH + 10
+    y = MARGIN_TOP + 10
+    pygame.draw.circle(screen, COLORS[next_player_color_1], (x+TILE_WIDTH//2, y+TILE_WIDTH//2), TILE_WIDTH//2)
+    #desenhar segundo círculo
+    x = MARGIN_LEFT + len(matrix[0])*TILE_WIDTH + 10
+    y = MARGIN_TOP + TILE_WIDTH + 10
+    pygame.draw.circle(screen, COLORS[next_player_color_2], (x+TILE_WIDTH//2, y+TILE_WIDTH//2), TILE_WIDTH//2)
 
     pygame.display.flip()
 
