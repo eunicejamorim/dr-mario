@@ -80,8 +80,11 @@ MARGIN_LEFT = 0
 MARGIN_TOP = 0
 
 FALL_TIME = 1000  # ms
+DESLOC_TIME = 300 #ms 
 
 last_fall_time = 0
+last_desloc_time = 0
+
 player_row_1 = 0
 player_col_1 = 0
 player_row_2 = 0
@@ -109,7 +112,7 @@ while running:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
-        if event.type == pygame.KEYDOWN:
+        if event.type == pygame.KEYDOWN and desloc == False:
             if event.key == pygame.K_LEFT and (player_col_1>=0 and player_col_2>=0):
                 if player_col_1 > 0 and player_col_2 > 0 and matrix[player_row_1][player_col_1 -1] == matrix[player_row_2][player_col_2 -1] == 0:
                     player_col_1 -= 1
@@ -147,28 +150,39 @@ while running:
                                 player_state_2 = "r"
 
     # movimento
-    if ((pygame.time.get_ticks() - last_fall_time) > FALL_TIME or down_pressed) and desloc == False:
-        if player_row_1 + 1 <= 13 and player_row_2 + 1 <= 13 and matrix[player_row_1+1][player_col_1] == 0 and matrix[player_row_2+1][player_col_2] == 0:
-            player_row_1 += 1
-            player_row_2 += 1
-        else:  # colisao
-            matrix[player_row_1][player_col_1] = player_color_1
-            matrix[player_row_2][player_col_2] = player_color_2
-            virus_pill[player_row_1][player_col_1] = player_state_1
-            virus_pill[player_row_2][player_col_2] = player_state_2
-            player_row_1 = 0
-            player_col_1 = 0
-            player_row_2 = 0
-            player_col_2 = 1
-            player_color_1 = next_player_color_1
-            player_color_2 = next_player_color_2
-            player_state_1 = "l"
-            player_state_2 = "r"
-            next_player_color_1 = random.randrange(1, 4+1)
-            next_player_color_2 = random.randrange(1, 4+1)
-        last_fall_time = pygame.time.get_ticks()
+    if desloc == False:
+        if ((pygame.time.get_ticks() - last_fall_time) > FALL_TIME or down_pressed):
+            if player_row_1 + 1 <= 13 and player_row_2 + 1 <= 13 and matrix[player_row_1+1][player_col_1] == 0 and matrix[player_row_2+1][player_col_2] == 0:
+                player_row_1 += 1
+                player_row_2 += 1
+            else:  # colisao
+                matrix[player_row_1][player_col_1] = player_color_1
+                matrix[player_row_2][player_col_2] = player_color_2
+                virus_pill[player_row_1][player_col_1] = player_state_1
+                virus_pill[player_row_2][player_col_2] = player_state_2
+                player_row_1 = 0
+                player_col_1 = 0
+                player_row_2 = 0
+                player_col_2 = 1
+                player_color_1 = next_player_color_1
+                player_color_2 = next_player_color_2
+                player_state_1 = "l"
+                player_state_2 = "r"
+                next_player_color_1 = random.randrange(1, 4+1)
+                next_player_color_2 = random.randrange(1, 4+1)
+            last_fall_time = pygame.time.get_ticks()
+    else:
+        if (pygame.time.get_ticks() - last_desloc_time) > DESLOC_TIME:
+            for col in range(8):
+                for row in range(14-2, 0, -1): #evita o out of range
+                    if matrix[row][col] != 0 and matrix[row+1][col] == 0 and virus_pill[row][col] ==0:
+                        matrix[row+1][col] = matrix[row][col]
+                        matrix[row][col] = 0
+                    else:
+                        desloc = False 
+            last_desloc_time = pygame.time.get_ticks()
 
-    # encontrar linhas/colunas 4 iguais
+    # encontrar linhas/colunas 4 iguais e atualizar as a virus_pill 
     for col in range(8-3):
         for row in range(14):
             if matrix[row][col] == matrix[row][col+1] == matrix[row][col+2] == matrix[row][col+3] != 0:
@@ -194,6 +208,7 @@ while running:
                 
                 
     # deslocamento se nada tiver em baixo
+    #atualização de ligações
     #teste tem a da direita (quebra de ligações)
     for col in range(8-1): #(evita o out of range)
         for row in range(14):
@@ -216,11 +231,12 @@ while running:
                 virus_pill[row][col] = 0
     #começar a mexer
     for col in range(8):
-        for row in range(14-1): #evita o out of range
-            if matrix[row][col] != 0 and matrix[row+1][col] == 0 and virus_pill[row][col] ==0:
-                #desloc = True
-                matrix[row+1][col] = matrix[row][col]
-                matrix[row][col] = 0
+        for row in range(14-2, 0, -1): #evita o out of range
+            if matrix[row][col] != 0 and matrix[row+1][col] == 0 and virus_pill[row][col] ==0: #caso de bloco single
+                desloc = True
+            
+#                matrix[row+1][col] = matrix[row][col]
+#                matrix[row][col] = 0
     ####################################################################
     # desenhar
     screen.fill((0, 0, 0))
