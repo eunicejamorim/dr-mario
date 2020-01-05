@@ -178,6 +178,12 @@ while running:
                     if matrix[row][col] != 0 and matrix[row+1][col] == 0 and virus_pill[row][col] ==0:
                         matrix[row+1][col] = matrix[row][col]
                         matrix[row][col] = 0
+                    if col < 7:
+                        if matrix[row][col] != 0 and matrix[row][col+1] != 0 and matrix[row+1][col] == matrix[row+1][col+1] == 0 and virus_pill[row][col] == "l" and virus_pill[row][col+1] =="r":
+                            matrix[row+1][col] = matrix[row][col]
+                            matrix[row][col] = 0
+                            matrix[row+1][col+1] = matrix[row][col+1]
+                            matrix[row][col+1] = 0
                     else:
                         desloc = False 
             last_desloc_time = pygame.time.get_ticks()
@@ -234,9 +240,10 @@ while running:
         for row in range(14-2, 0, -1): #evita o out of range
             if matrix[row][col] != 0 and matrix[row+1][col] == 0 and virus_pill[row][col] ==0: #caso de bloco single
                 desloc = True
-            
-#                matrix[row+1][col] = matrix[row][col]
-#                matrix[row][col] = 0
+            if col < 7:
+                if matrix[row][col] != 0 and matrix[row][col+1] != 0 and matrix[row+1][col] == matrix[row+1][col+1] == 0 and virus_pill[row][col] == "l" and virus_pill[row][col+1] =="r":
+                    desloc = True
+
     ####################################################################
     # desenhar
     screen.fill((0, 0, 0))
