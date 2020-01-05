@@ -30,8 +30,10 @@ Semelhante a:
 1. desenhar gráficos básicos - done 
 2. desenhar a matriz do nível - done
 3. ler teclas e mover as peças - done
-5. diferenciar "comprimidos" e "vírus"
-4. verificar se jogador chegou ao fim do nível - 40%
+5. diferenciar "comprimidos" e "vírus" - done
+4. verificar se jogador chegou ao fim do nível - 90%
 
+Melhorias:
+1. Melhorar gráficos - 20%
 
-18 de novembro de 2019
+05 de janeiro de 2020
