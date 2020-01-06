@@ -184,6 +184,12 @@ while running:
                             matrix[row][col] = 0
                             matrix[row+1][col+1] = matrix[row][col+1]
                             matrix[row][col+1] = 0
+                    if matrix[row][col] != 0 and matrix[row-1][col] != 0 and matrix[row+1][col] == 0 and virus_pill[row][col] == "d" and virus_pill[row-1][col] == "u":
+                        matrix[row+1][col] = matrix[row][col]
+                        matrix[row][col] = matrix[row-1][col]
+                        matrix[row-1][col] = 0
+                        virus_pill[row+1][col] = "d"
+                        virus_pill[row][col] = "u"
                     else:
                         desloc = False 
             last_desloc_time = pygame.time.get_ticks()
@@ -243,6 +249,8 @@ while running:
             if col < 7:
                 if matrix[row][col] != 0 and matrix[row][col+1] != 0 and matrix[row+1][col] == matrix[row+1][col+1] == 0 and virus_pill[row][col] == "l" and virus_pill[row][col+1] =="r":
                     desloc = True
+            if matrix[row][col] != 0 and matrix[row-1][col] != 0 and matrix[row+1][col] == 0 and virus_pill[row][col] == "d" and virus_pill[row-1][col] == "u":
+                desloc = True
 
     ####################################################################
     # desenhar
