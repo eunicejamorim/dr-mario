@@ -105,8 +105,8 @@ clock = pygame.time.Clock()
 desloc = False
 next_same_row = True
 next_same_col = True
-change_row = []
-change_col = []
+
+all_changes = []
   
 while running:
     dt = clock.tick(30)
@@ -199,60 +199,47 @@ while running:
             last_desloc_time = pygame.time.get_ticks()
 
     # encontrar linhas/colunas 4 iguais e atualizar as a virus_pill 
-    #análise de linhas
-    for col in range(8-3):
-        for row in range(14):
-            if matrix[row][col] == matrix[row][col+1] == matrix[row][col+2] == matrix[row][col+3] != 0:
-                for i in [1, 2, 3, 4]:
-                    if next_same_row == True:
-                        if 1 <= col + i <= 7:
-                            if matrix[row][col +3+ i] == matrix[row][col+3+i-1]:
-                                change_row.append(i)
-                                if col + i == 7:
-                                    next_same_row = False
-                            else:
-                                next_same_row = False
-                matrix[row][col] = 0
-                matrix[row][col+1] = 0
-                matrix[row][col+2] = 0
-                matrix[row][col+3] = 0
-                virus_pill[row][col] = 0
-                virus_pill[row][col+1] = 0
-                virus_pill[row][col+2] = 0
-                virus_pill[row][col+3] = 0
-                for i in change_row:
-                    matrix[row][col+3+i] = 0
-                    virus_pill[row][col+3+i] = 0
-                next_same_row = True
-                change_row = []
-    #análise de colunas
-    #é possível que haja bug não testado
+   
     for col in range(8):
-        for row in range(14-3):
-            if matrix[row][col] == matrix[row+1][col] == matrix[row+2][col] == matrix[row+3][col] != 0:
-                for i in [1, 2, 3, 4]:
-                    if next_same_col == True:
-                        if 1 <= row + i <= 13:
-                            if matrix[row +3+ i][col] == matrix[row+3+i-1][col]:
-                                change_col.append(i)
-                                if row + i == 13:
+        for row in range(14):
+             #análise de linhas
+            if col < 8-3:
+                if matrix[row][col] == matrix[row][col+1] == matrix[row][col+2] == matrix[row][col+3] != 0:
+                    all_changes.append((row, col))
+                    all_changes.append((row, col+1))
+                    all_changes.append((row, col+2))
+                    all_changes.append((row, col+3))
+                    for i in [1, 2, 3, 4]:
+                        if next_same_row == True:
+                            if 1 <= col + 3 + i <= 7:
+                                if matrix[row][col +3+ i] == matrix[row][col+3+i-1]:
+                                    all_changes.append((row, col+3+i))
+                                    if col + i == 7:
+                                        next_same_row = False
+                                else:
+                                    next_same_row = False
+             #análise de colunas
+            if row < 14-3:
+                if matrix[row][col] == matrix[row+1][col] == matrix[row+2][col] == matrix[row+3][col] != 0:
+                    all_changes.append((row,col))
+                    all_changes.append((row +1, col))
+                    all_changes.append((row +2, col))
+                    all_changes.append((row +3, col))
+                    for i in [1, 2, 3, 4]:
+                        if next_same_col == True:
+                            if 1 <= row + 3+ i <= 13:
+                                if matrix[row +3+ i][col] == matrix[row+3+i-1][col]:
+                                    all_changes.append((row+3+i, col))
+                                    if row + i == 13:
+                                        next_same_col = False
+                                else:
                                     next_same_col = False
-                            else:
-                                next_same_col = False
-                matrix[row][col] = 0 
-                matrix[row+1][col] = 0
-                matrix[row+2][col] = 0
-                matrix[row+3][col] = 0
-                virus_pill[row][col] = 0 
-                virus_pill[row+1][col] = 0
-                virus_pill[row+2][col] = 0
-                virus_pill[row+3][col] = 0
-                for i in change_col:
-                    matrix[row+3+i][col] = 0
-                    virus_pill[row+3+i][col] = 0
-                next_same_col = True
-                change_col = []
-                
+        for r, c in all_changes:
+            matrix[r][c] = 0
+            virus_pill[r][c] = 0
+        next_same_row = True
+        next_same_col = True
+        all_changes = []
                 
     # deslocamento se nada tiver em baixo
     #atualização de ligações
