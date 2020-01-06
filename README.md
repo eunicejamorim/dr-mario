@@ -35,5 +35,6 @@ Semelhante a:
 
 Melhorias:
 1. Melhorar gráficos - 20%
+2. Eliminação de bugs reportados - 10%
 
 05 de janeiro de 2020
