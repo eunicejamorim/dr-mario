@@ -82,6 +82,8 @@ MARGIN_TOP = 0
 FALL_TIME = 1000  # ms
 DESLOC_TIME = 300 #ms 
 
+playing = True
+
 last_fall_time = 0
 last_desloc_time = 0
 
@@ -112,164 +114,166 @@ n_virus = 8*4
 pause = False
 pause_sign = 1
 all_changes = []
-  
+
 while running:
     dt = clock.tick(30)
     
     # eventos
     down_pressed = False
     for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-            running = False
-        if event.type == pygame.KEYDOWN and desloc == False:
-            if event.key == pygame.K_RETURN:
-                if lose == True or win == True:
-                    matrix =[
-                            [0,0,0,0,0,0,0,0],
-                            [0,0,0,0,0,0,0,0],
-                            [0,0,0,0,0,0,0,0],
-                            [0,0,0,0,0,0,0,0],
-                            [0,0,0,0,0,0,0,0],
-                            [0,0,0,0,0,0,0,0],
-                            [0,0,0,0,0,0,0,0],
-                            [0,0,0,0,0,0,0,0],
-                            [0,0,0,0,0,0,0,0],
-                            [0,0,0,0,0,0,0,0],
-                            [3,3,1,4,1,2,1,2],
-                            [3,2,4,4,4,2,3,2],
-                            [3,1,3,2,2,1,3,4],
-                            [1,1,1,2,4,4,3,2],
-                            ]
-                    virus_pill = [
-                            [0,0,0,0,0,0,0,0],
-                            [0,0,0,0,0,0,0,0],
-                            [0,0,0,0,0,0,0,0],
-                            [0,0,0,0,0,0,0,0],
-                            [0,0,0,0,0,0,0,0],
-                            [0,0,0,0,0,0,0,0],
-                            [0,0,0,0,0,0,0,0],
-                            [0,0,0,0,0,0,0,0],
-                            [0,0,0,0,0,0,0,0],
-                            [0,0,0,0,0,0,0,0],
-                            ["v","v","v","v","v","v","v","v"],
-                            ["v","v","v","v","v","v","v","v"],
-                            ["v","v","v","v","v","v","v","v"],
-                            ["v","v","v","v","v","v","v","v"],
-                            ]
-                    last_fall_time = 0
-                    last_desloc_time = 0
+        if playing == True:
+            if event.type == pygame.QUIT:
+                running = False
+            if event.type == pygame.KEYDOWN and desloc == False:
+                if event.key == pygame.K_RETURN:
+                    if lose == True or win == True:
+                        matrix =[
+                                [0,0,0,0,0,0,0,0],
+                                [0,0,0,0,0,0,0,0],
+                                [0,0,0,0,0,0,0,0],
+                                [0,0,0,0,0,0,0,0],
+                                [0,0,0,0,0,0,0,0],
+                                [0,0,0,0,0,0,0,0],
+                                [0,0,0,0,0,0,0,0],
+                                [0,0,0,0,0,0,0,0],
+                                [0,0,0,0,0,0,0,0],
+                                [0,0,0,0,0,0,0,0],
+                                [3,3,1,4,1,2,1,2],
+                                [3,2,4,4,4,2,3,2],
+                                [3,1,3,2,2,1,3,4],
+                                [1,1,1,2,4,4,3,2],
+                                ]
+                        virus_pill = [
+                                [0,0,0,0,0,0,0,0],
+                                [0,0,0,0,0,0,0,0],
+                                [0,0,0,0,0,0,0,0],
+                                [0,0,0,0,0,0,0,0],
+                                [0,0,0,0,0,0,0,0],
+                                [0,0,0,0,0,0,0,0],
+                                [0,0,0,0,0,0,0,0],
+                                [0,0,0,0,0,0,0,0],
+                                [0,0,0,0,0,0,0,0],
+                                [0,0,0,0,0,0,0,0],
+                                ["v","v","v","v","v","v","v","v"],
+                                ["v","v","v","v","v","v","v","v"],
+                                ["v","v","v","v","v","v","v","v"],
+                                ["v","v","v","v","v","v","v","v"],
+                                ]
+                        last_fall_time = 0
+                        last_desloc_time = 0
+                        
+                        player_row_1 = 0
+                        player_col_1 = 0
+                        player_row_2 = 0
+                        player_col_2 = 1
+                        player_color_1 = random.randrange(1, 4+1)
+                        player_color_2 = random.randrange(1, 4+1)
+                        player_state_1 = "l"
+                        player_state_2 = "r"
+                        
+                        next_player_color_1 = random.randrange(1, 4+1)
+                        next_player_color_2 = random.randrange(1, 4+1)
+                        
+                        #verificar se alguma peça está a ser deslocada
+                        desloc = False
+                        next_same_row = True
+                        next_same_col = True
+                        
+                        win = False
+                        lose = False
+                        n_virus = 8*4
+                        pause = False
+                        pause_sign = 1
+                        all_changes = []
+                                       
+                if event.key == pygame.K_ESCAPE:
+                    pause_sign = pause_sign *(-1)
+                    if pause_sign == 1:
+                        pause = False
+                    else:
+                        pause = True
                     
+                if event.key == pygame.K_LEFT and (player_col_1>=0 and player_col_2>=0) and pause == False:
+                    if player_col_1 > 0 and player_col_2 > 0 and matrix[player_row_1][player_col_1 -1] == matrix[player_row_2][player_col_2 -1] == 0:
+                        player_col_1 -= 1
+                        player_col_2 -= 1
+                if event.key == pygame.K_RIGHT and (player_col_1<=6 and player_col_2<=6) and pause == False:
+                    if player_col_1 < len(matrix[0]) and player_col_2 < len(matrix[0]) and matrix[player_row_1][player_col_1 +1] == matrix[player_row_2][player_col_2 +1] == 0:
+                        player_col_1 += 1
+                        player_col_2 += 1
+                if event.key == pygame.K_DOWN:
+                    down_pressed = True
+                #rodar 
+                if event.key == pygame.K_SPACE and pause == False:
+                    if player_row_1 == player_row_2 and player_col_1 < player_col_2 and matrix[player_row_1 + 1][player_col_1] == 0 and player_row_1 != 12 and matrix[player_row_2 + 1][player_col_2 ] == 0 :
+                        player_row_2 += 1
+                        player_col_2 -= 1
+                        player_state_1 = "u"
+                        player_state_2 = "d"
+                    else:
+                        if player_col_1 == player_col_2 and player_row_1 < player_row_2 and player_col_1 > 0 and matrix[player_row_1][player_col_1 - 1] == 0 and matrix[player_row_2][player_col_2-1] == 0 :
+                            player_row_2 -= 1
+                            player_col_2 -= 1
+                            player_state_1 = "r"
+                            player_state_2 = "l"
+                        else: # rever
+                            if player_row_1 == player_row_2 and player_col_1 > player_col_2 and matrix[player_row_1 -1][player_col_1] == 0 and player_row_1 > 0 and matrix[player_row_2 - 1][player_col_2] == 0 :
+                                player_row_2 -= 1
+                                player_col_2 += 1
+                                player_state_1 = "d"
+                                player_state_2 = "u"
+                            else:
+                                if player_col_1 == player_col_2 and player_row_1 > player_row_2  and player_col_1 < 7 and matrix[player_row_1][player_col_1 + 1] == 0 and matrix[player_row_2][player_col_2 +1] == 0 :
+                                    player_row_2 += 1
+                                    player_col_2 += 1
+                                    player_state_1 = "l"
+                                    player_state_2 = "r"
+
+    # movimento
+    if playing == True:
+        if desloc == False and pause == False:
+            if ((pygame.time.get_ticks() - last_fall_time) > FALL_TIME or down_pressed):
+                if player_row_1 + 1 <= 13 and player_row_2 + 1 <= 13 and matrix[player_row_1+1][player_col_1] == 0 and matrix[player_row_2+1][player_col_2] == 0:
+                    player_row_1 += 1
+                    player_row_2 += 1
+                else:  # colisao
+                    matrix[player_row_1][player_col_1] = player_color_1
+                    matrix[player_row_2][player_col_2] = player_color_2
+                    virus_pill[player_row_1][player_col_1] = player_state_1
+                    virus_pill[player_row_2][player_col_2] = player_state_2
                     player_row_1 = 0
                     player_col_1 = 0
                     player_row_2 = 0
                     player_col_2 = 1
-                    player_color_1 = random.randrange(1, 4+1)
-                    player_color_2 = random.randrange(1, 4+1)
+                    player_color_1 = next_player_color_1
+                    player_color_2 = next_player_color_2
                     player_state_1 = "l"
                     player_state_2 = "r"
-                    
                     next_player_color_1 = random.randrange(1, 4+1)
                     next_player_color_2 = random.randrange(1, 4+1)
-                    
-                    #verificar se alguma peça está a ser deslocada
-                    desloc = False
-                    next_same_row = True
-                    next_same_col = True
-                    
-                    win = False
-                    lose = False
-                    n_virus = 8*4
-                    pause = False
-                    pause_sign = 1
-                    all_changes = []
-                                   
-            if event.key == pygame.K_ESCAPE:
-                pause_sign = pause_sign *(-1)
-                if pause_sign == 1:
-                    pause = False
-                else:
-                    pause = True
-                
-            if event.key == pygame.K_LEFT and (player_col_1>=0 and player_col_2>=0):
-                if player_col_1 > 0 and player_col_2 > 0 and matrix[player_row_1][player_col_1 -1] == matrix[player_row_2][player_col_2 -1] == 0:
-                    player_col_1 -= 1
-                    player_col_2 -= 1
-            if event.key == pygame.K_RIGHT and (player_col_1<=6 and player_col_2<=6):
-                if player_col_1 < len(matrix[0]) and player_col_2 < len(matrix[0]) and matrix[player_row_1][player_col_1 +1] == matrix[player_row_2][player_col_2 +1] == 0:
-                    player_col_1 += 1
-                    player_col_2 += 1
-            if event.key == pygame.K_DOWN:
-                down_pressed = True
-            #rodar 
-            if event.key == pygame.K_SPACE:
-                if player_row_1 == player_row_2 and player_col_1 < player_col_2 and matrix[player_row_1 + 1][player_col_1] == 0 and player_row_1 != 12 and matrix[player_row_2 + 1][player_col_2 ] == 0 :
-                    player_row_2 += 1
-                    player_col_2 -= 1
-                    player_state_1 = "u"
-                    player_state_2 = "d"
-                else:
-                    if player_col_1 == player_col_2 and player_row_1 < player_row_2 and player_col_1 > 0 and matrix[player_row_1][player_col_1 - 1] == 0 and matrix[player_row_2][player_col_2-1] == 0 :
-                        player_row_2 -= 1
-                        player_col_2 -= 1
-                        player_state_1 = "r"
-                        player_state_2 = "l"
-                    else: # rever
-                        if player_row_1 == player_row_2 and player_col_1 > player_col_2 and matrix[player_row_1 -1][player_col_1] == 0 and player_row_1 > 0 and matrix[player_row_2 - 1][player_col_2] == 0 :
-                            player_row_2 -= 1
-                            player_col_2 += 1
-                            player_state_1 = "d"
-                            player_state_2 = "u"
-                        else:
-                            if player_col_1 == player_col_2 and player_row_1 > player_row_2  and player_col_1 < 7 and matrix[player_row_1][player_col_1 + 1] == 0 and matrix[player_row_2][player_col_2 +1] == 0 :
-                                player_row_2 += 1
-                                player_col_2 += 1
-                                player_state_1 = "l"
-                                player_state_2 = "r"
-
-    # movimento
-    if desloc == False and pause == False:
-        if ((pygame.time.get_ticks() - last_fall_time) > FALL_TIME or down_pressed):
-            if player_row_1 + 1 <= 13 and player_row_2 + 1 <= 13 and matrix[player_row_1+1][player_col_1] == 0 and matrix[player_row_2+1][player_col_2] == 0:
-                player_row_1 += 1
-                player_row_2 += 1
-            else:  # colisao
-                matrix[player_row_1][player_col_1] = player_color_1
-                matrix[player_row_2][player_col_2] = player_color_2
-                virus_pill[player_row_1][player_col_1] = player_state_1
-                virus_pill[player_row_2][player_col_2] = player_state_2
-                player_row_1 = 0
-                player_col_1 = 0
-                player_row_2 = 0
-                player_col_2 = 1
-                player_color_1 = next_player_color_1
-                player_color_2 = next_player_color_2
-                player_state_1 = "l"
-                player_state_2 = "r"
-                next_player_color_1 = random.randrange(1, 4+1)
-                next_player_color_2 = random.randrange(1, 4+1)
-            last_fall_time = pygame.time.get_ticks()
-    elif desloc == True and pause == False:
-        if (pygame.time.get_ticks() - last_desloc_time) > DESLOC_TIME:
-            for col in range(8):
-                for row in range(14-2, 0, -1): #evita o out of range
-                    if matrix[row][col] != 0 and matrix[row+1][col] == 0 and virus_pill[row][col] ==0:
-                        matrix[row+1][col] = matrix[row][col]
-                        matrix[row][col] = 0
-                    if col < 7:
-                        if matrix[row][col] != 0 and matrix[row][col+1] != 0 and matrix[row+1][col] == matrix[row+1][col+1] == 0 and virus_pill[row][col] == "l" and virus_pill[row][col+1] =="r":
+                last_fall_time = pygame.time.get_ticks()
+        elif desloc == True and pause == False:
+            if (pygame.time.get_ticks() - last_desloc_time) > DESLOC_TIME:
+                for col in range(8):
+                    for row in range(14-2, 0, -1): #evita o out of range
+                        if matrix[row][col] != 0 and matrix[row+1][col] == 0 and virus_pill[row][col] ==0:
                             matrix[row+1][col] = matrix[row][col]
                             matrix[row][col] = 0
-                            matrix[row+1][col+1] = matrix[row][col+1]
-                            matrix[row][col+1] = 0
-                    if matrix[row][col] != 0 and matrix[row-1][col] != 0 and matrix[row+1][col] == 0 and virus_pill[row][col] == "d" and virus_pill[row-1][col] == "u":
-                        matrix[row+1][col] = matrix[row][col]
-                        matrix[row][col] = matrix[row-1][col]
-                        matrix[row-1][col] = 0
-                        virus_pill[row+1][col] = "d"
-                        virus_pill[row][col] = "u"
-                    else:
-                        desloc = False 
-            last_desloc_time = pygame.time.get_ticks()
+                        if col < 7:
+                            if matrix[row][col] != 0 and matrix[row][col+1] != 0 and matrix[row+1][col] == matrix[row+1][col+1] == 0 and virus_pill[row][col] == "l" and virus_pill[row][col+1] =="r":
+                                matrix[row+1][col] = matrix[row][col]
+                                matrix[row][col] = 0
+                                matrix[row+1][col+1] = matrix[row][col+1]
+                                matrix[row][col+1] = 0
+                        if matrix[row][col] != 0 and matrix[row-1][col] != 0 and matrix[row+1][col] == 0 and virus_pill[row][col] == "d" and virus_pill[row-1][col] == "u":
+                            matrix[row+1][col] = matrix[row][col]
+                            matrix[row][col] = matrix[row-1][col]
+                            matrix[row-1][col] = 0
+                            virus_pill[row+1][col] = "d"
+                            virus_pill[row][col] = "u"
+                        else:
+                            desloc = False 
+                last_desloc_time = pygame.time.get_ticks()
 
     # encontrar linhas/colunas 4 iguais e atualizar as a virus_pill 
    
@@ -347,12 +351,13 @@ while running:
             if matrix[row][col] != 0 and matrix[row-1][col] != 0 and matrix[row+1][col] == 0 and virus_pill[row][col] == "d" and virus_pill[row-1][col] == "u":
                 desloc = True
     n_virus = 0
-    for col in range(8): 
-        for row in range(14):#(evita o out of range)       
-            if virus_pill[row][col] == "v":
-                n_virus = n_virus +1
-            if matrix[0][col] != 0:
-                lose = True
+    if win == False:
+        for col in range(8): 
+            for row in range(14):#(evita o out of range)       
+                if virus_pill[row][col] == "v":
+                    n_virus = n_virus +1
+                if matrix[0][col] != 0:
+                    lose = True
     if n_virus == 0:
         win = True
                 
@@ -362,43 +367,44 @@ while running:
    # pygame.draw.rect(screen, (255, 255, 255), (MARGIN_LEFT+2, MARGIN_TOP+2, TILE_WIDTH*len(matrix[0])-4, TILE_WIDTH*len(matrix)-4))
 
     #screen.blit(halfpill, (0,0))
-    if win == False and lose== False:
-        pygame.draw.rect(screen, (255, 255, 255), (MARGIN_LEFT+2, MARGIN_TOP+2, TILE_WIDTH*len(matrix[0])-4, TILE_WIDTH*len(matrix)-4))
-        for col in range(8):
-            for row in range(14):
-                if matrix[row][col] == 0: continue
-                color = COLORS[matrix[row][col]]
-                x = col*TILE_WIDTH+MARGIN_LEFT
-                y = row*TILE_WIDTH+MARGIN_TOP
-    
-                pygame.draw.rect(screen, color, (x+2, y+2, TILE_WIDTH-4, TILE_WIDTH-4))
-                text = font.render(str(virus_pill[row][col]), True, (255, 255, 255))
-                screen.blit(text, (x+2, y+2))
-    
-        #desenhar primeiro círculo
-        x = player_col_1*TILE_WIDTH+MARGIN_LEFT
-        y = player_row_1*TILE_WIDTH+MARGIN_TOP
-        pygame.draw.circle(screen, COLORS[player_color_1], (x+TILE_WIDTH//2, y+TILE_WIDTH//2), TILE_WIDTH//2)
-        #desenhar segundo círculo
-        x = (player_col_2)*TILE_WIDTH+MARGIN_LEFT
-        y = player_row_2 *TILE_WIDTH+MARGIN_TOP
-        pygame.draw.circle(screen, COLORS[player_color_2], (x+TILE_WIDTH//2, y+TILE_WIDTH//2), TILE_WIDTH//2)
+    if playing == True:
+        if win == False and lose== False:
+            pygame.draw.rect(screen, (255, 255, 255), (MARGIN_LEFT+2, MARGIN_TOP+2, TILE_WIDTH*len(matrix[0])-4, TILE_WIDTH*len(matrix)-4))
+            for col in range(8):
+                for row in range(14):
+                    if matrix[row][col] == 0: continue
+                    color = COLORS[matrix[row][col]]
+                    x = col*TILE_WIDTH+MARGIN_LEFT
+                    y = row*TILE_WIDTH+MARGIN_TOP
         
-    
-        # NEXT
-        x = MARGIN_LEFT + len(matrix[0])*TILE_WIDTH + 10
-        y = MARGIN_TOP + 10
-        pygame.draw.circle(screen, COLORS[next_player_color_1], (x+TILE_WIDTH//2, y+TILE_WIDTH//2), TILE_WIDTH//2)
-        #desenhar segundo círculo
-        x = MARGIN_LEFT + len(matrix[0])*TILE_WIDTH + 10 + TILE_WIDTH
-        pygame.draw.circle(screen, COLORS[next_player_color_2], (x+TILE_WIDTH//2, y+TILE_WIDTH//2), TILE_WIDTH//2)
-    
-    if win == True:
-        text = font.render("YOU WIN! New game? Press enter", True, (255, 255, 0))
-        screen.blit(text, (200, 350))
-    if lose == True:
-        text = font.render("YOU LOSE :( New game? Press enter", True, (255, 255, 0))
-        screen.blit(text, (200, 350))
+                    pygame.draw.rect(screen, color, (x+2, y+2, TILE_WIDTH-4, TILE_WIDTH-4))
+                    text = font.render(str(virus_pill[row][col]), True, (255, 255, 255))
+                    screen.blit(text, (x+2, y+2))
+        
+            #desenhar primeiro círculo
+            x = player_col_1*TILE_WIDTH+MARGIN_LEFT
+            y = player_row_1*TILE_WIDTH+MARGIN_TOP
+            pygame.draw.circle(screen, COLORS[player_color_1], (x+TILE_WIDTH//2, y+TILE_WIDTH//2), TILE_WIDTH//2)
+            #desenhar segundo círculo
+            x = (player_col_2)*TILE_WIDTH+MARGIN_LEFT
+            y = player_row_2 *TILE_WIDTH+MARGIN_TOP
+            pygame.draw.circle(screen, COLORS[player_color_2], (x+TILE_WIDTH//2, y+TILE_WIDTH//2), TILE_WIDTH//2)
+            
+        
+            # NEXT
+            x = MARGIN_LEFT + len(matrix[0])*TILE_WIDTH + 10
+            y = MARGIN_TOP + 10
+            pygame.draw.circle(screen, COLORS[next_player_color_1], (x+TILE_WIDTH//2, y+TILE_WIDTH//2), TILE_WIDTH//2)
+            #desenhar segundo círculo
+            x = MARGIN_LEFT + len(matrix[0])*TILE_WIDTH + 10 + TILE_WIDTH
+            pygame.draw.circle(screen, COLORS[next_player_color_2], (x+TILE_WIDTH//2, y+TILE_WIDTH//2), TILE_WIDTH//2)
+        
+        if win == True:
+            text = font.render("YOU WIN! New game? Press enter", True, (255, 255, 0))
+            screen.blit(text, (200, 350))
+        if lose == True:
+            text = font.render("YOU LOSE :( New game? Press enter", True, (255, 255, 0))
+            screen.blit(text, (200, 350))
     pygame.display.flip()
 
 pygame.quit()
