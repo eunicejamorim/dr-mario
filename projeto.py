@@ -12,22 +12,57 @@ Created on Mon Nov 25 11:40:02 2019
 @author: eunic
 """
 
-"""
-X. nao deixar sair das paredes
-2. ter duas variaveis para a cor do jogador (lista com dois elementos)
-x. angulo do jogador (1-4)
-4. desenhar
-"""
-
 import pygame
 import random
+import os
 
 pygame.init()
 
-screen = pygame.display.set_mode((600, 700))
-#halfpill = pygame.image.load("smaller pill.png")
-#teste  = pygame.image.load("50 pixeis.png")
+screen = pygame.display.set_mode((800, 790))
 running = True
+#todos os desenhos matriz
+#1 verde
+#2 vermelho
+#3 azul
+#4 amarelo (rosa)
+UP_1 = pygame.image.load("verde_u.png")
+UP_2 = pygame.image.load("verm_u.png")
+UP_3 =pygame.image.load("azul_u.png")
+UP_4 =pygame.image.load("ama_up.png")
+
+DOWN_1 =pygame.image.load("verde_d.png")
+DOWN_2 =pygame.image.load("verm_d.png")
+DOWN_3 =pygame.image.load("azul_d.png")
+DOWN_4 =pygame.image.load("ama_d.png")
+
+RIGHT_1 =pygame.image.load("verde_r.png")
+RIGHT_2 =pygame.image.load("verm_r.png")
+RIGHT_3 =pygame.image.load("azul_r.png")
+RIGHT_4 =pygame.image.load("ama_r.png")
+
+LEFT_1 =pygame.image.load("verde_l.png")
+LEFT_2 =pygame.image.load("verm_l.png")
+LEFT_3 =pygame.image.load("azul_l.png")
+LEFT_4 =pygame.image.load("ama_l.png")
+
+SING_1 =pygame.image.load("verde_s.png")
+SING_2 = pygame.image.load("verm_s.png")
+SING_3 =pygame.image.load("azul_s.png")
+SING_4 =pygame.image.load("ama_single.png")
+
+VIRUS_1 =pygame.image.load("virus_verd_1.png")
+VIRUS_2 =pygame.image.load("virus_verm_1.png")
+VIRUS_3 =pygame.image.load("virus_azul_1.png")
+VIRUS_4 =pygame.image.load("virus_amar_1.png")
+
+JAR = pygame.image.load("frasco_1.png")
+
+if os.path.exists('highscore.txt'):
+    open('highscore.txt')
+    with open('highscore.txt', "r") as f:
+        highscore = int(f.read())
+else:
+    highscore = 0
 
 matrix = [
     [0,0,0,0,0,0,0,0],
@@ -63,8 +98,24 @@ virus_pill = [
         ["v","v","v","v","v","v","v","v"],
         ["v","v","v","v","v","v","v","v"],
 ]
+#1 verde
+#2 vermelho
+#3 azul
+#4 amarelo (rosa)
+#COLORS = {1: (0, 255, 0), 2: (255, 0, 0),
+          #3: (0, 0, 255), 4: (255, 0, 255)}
 
-COLORS = {1: (0, 255, 0), 2: (255, 0, 0), 3: (0, 0, 255), 4: (255, 0, 255)}
+#tuplo = (cor, posição)
+#COLORS = tuple((x, y) for x in [1,2,3,4] for y in ["u", "d", "r", "l", "v"])
+#COLORS = {(1, 'u'),(1, 'd'),(1, 'r'),(1, 'l'),(1, 'v'),(2, 'u'),(2, 'd'),(2, 'r'),(2, 'l'),(2, 'v'),
+#(3, 'u'),(3, 'd'),(3, 'r'),(3, 'l'),(3, 'v'),(4, 'u'),(4, 'd'),(4, 'r'),(4, 'l'),(4, 'v')}
+
+COLORS = {(1, 'u'): UP_1, (2, 'u'): UP_2, (3, 'u'): UP_3, (4, 'u'): UP_4, 
+          (1, 'd'): DOWN_1, (2, 'd'): DOWN_2, (3, 'd'): DOWN_3, (4, 'd'): DOWN_4,
+          (1, 'r'): RIGHT_1, (2, 'r'): RIGHT_2, (3, 'r'): RIGHT_3, (4, 'r'): RIGHT_4,
+          (1, 'l'): LEFT_1, (2, 'l'): LEFT_2, (3, 'l'): LEFT_3, (4, 'l'): LEFT_4,
+          (1, 0): SING_1, (2, 0): SING_2, (3, 0): SING_3, (4, 0): SING_4, 
+          (1, 'v'): VIRUS_1, (2, 'v'): VIRUS_2, (3, 'v'): VIRUS_3, (4, 'v'): VIRUS_4}
 
 #conecções entre os blocos 
 #CON_ROW = {'r': 0, 'l': 0, 'u': -1, 'd': 1, 0: 0, 'v': 0}
@@ -83,6 +134,7 @@ FALL_TIME = 1000  # ms
 DESLOC_TIME = 300 #ms 
 
 playing = True
+menu_selec = False
 
 last_fall_time = 0
 last_desloc_time = 0
@@ -114,6 +166,8 @@ n_virus = 8*4
 pause = False
 pause_sign = 1
 all_changes = []
+changing_virus = False
+score = 0
 
 while running:
     dt = clock.tick(30)
@@ -121,12 +175,17 @@ while running:
     # eventos
     down_pressed = False
     for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            running = False
+        if menu_selec == True:
+            if event.type == pygame.KEYDOWN:
+                continue
         if playing == True:
-            if event.type == pygame.QUIT:
-                running = False
             if event.type == pygame.KEYDOWN and desloc == False:
                 if event.key == pygame.K_RETURN:
                     if lose == True or win == True:
+                        with open('highscore.txt', 'w') as file:
+                            file.write(str(highscore))
                         matrix =[
                                 [0,0,0,0,0,0,0,0],
                                 [0,0,0,0,0,0,0,0],
@@ -185,14 +244,22 @@ while running:
                         pause = False
                         pause_sign = 1
                         all_changes = []
-                                       
+                        
+                        if os.path.exists('highscore.txt'):
+                            with open('highscore.txt', "r") as f:
+                                highscore = int(f.read())
+                        else:
+                            highscore = 0
+                        score = 0                
                 if event.key == pygame.K_ESCAPE:
+                    pause = not pause
+                    '''
                     pause_sign = pause_sign *(-1)
                     if pause_sign == 1:
                         pause = False
                     else:
                         pause = True
-                    
+                    '''
                 if event.key == pygame.K_LEFT and (player_col_1>=0 and player_col_2>=0) and pause == False:
                     if player_col_1 > 0 and player_col_2 > 0 and matrix[player_row_1][player_col_1 -1] == matrix[player_row_2][player_col_2 -1] == 0:
                         player_col_1 -= 1
@@ -276,6 +343,7 @@ while running:
                 last_desloc_time = pygame.time.get_ticks()
 
     # encontrar linhas/colunas 4 iguais e atualizar as a virus_pill 
+    
    
     for col in range(8):
         for row in range(14):
@@ -314,32 +382,34 @@ while running:
         for r, c in all_changes:
             matrix[r][c] = 0
             virus_pill[r][c] = 0
+            score = score + 10
+            if score > highscore:
+                highscore = score
         next_same_row = True
         next_same_col = True
         all_changes = []
                 
     # deslocamento se nada tiver em baixo
     #atualização de ligações
-    #teste tem a da direita (quebra de ligações)
-    for col in range(8-1): #(evita o out of range)
+    for col in range(8):
         for row in range(14):
-            if virus_pill[row][col] == "l" and virus_pill[row][col+1] != "r":
-                virus_pill[row][col] = 0
-    #teste tem a de baixo (quebra de ligações)
-    for col in range(8): 
-        for row in range(14-1):#(evita o out of range)
-            if virus_pill[row][col] == "u" and virus_pill[row+1][col] != "d":
-                virus_pill[row][col] = 0
-    #teste tem a da esquerda (quebra de ligações)
-    for col in range(1, 8):
-        for row in range(14):
-            if virus_pill[row][col] == "r" and virus_pill[row][col-1] != "l":
-                virus_pill[row][col] = 0
-    #teste tem a de cima (quebra de ligações)
-    for col in range(8): 
-        for row in range(1, 14):#(evita o out of range)
-            if virus_pill[row][col] == "d" and virus_pill[row-1][col] != "u":
-                virus_pill[row][col] = 0
+            #teste tem a da direita (quebra de ligações)
+            if col < 7:
+                if virus_pill[row][col] == "l" and virus_pill[row][col+1] != "r":
+                    virus_pill[row][col] = 0
+            #teste tem a de baixo (quebra de ligações)
+            if row < 13:
+                if virus_pill[row][col] == "u" and virus_pill[row+1][col] != "d":
+                    virus_pill[row][col] = 0
+            #teste tem a da esquerda (quebra de ligações)
+            if col > 0:
+                if virus_pill[row][col] == "r" and virus_pill[row][col-1] != "l":
+                    virus_pill[row][col] = 0
+            #teste tem a de cima (quebra de ligações)
+            if row > 0:
+                if virus_pill[row][col] == "d" and virus_pill[row-1][col] != "u":
+                    virus_pill[row][col] = 0
+
     #começar a mexer
     for col in range(8):
         for row in range(14-2, 0, -1): #evita o out of range
@@ -369,35 +439,41 @@ while running:
     #screen.blit(halfpill, (0,0))
     if playing == True:
         if win == False and lose== False:
-            pygame.draw.rect(screen, (255, 255, 255), (MARGIN_LEFT+2, MARGIN_TOP+2, TILE_WIDTH*len(matrix[0])-4, TILE_WIDTH*len(matrix)-4))
+            screen.blit(JAR, (20,70))
+            #pygame.draw.rect(screen, (255, 255, 255), (MARGIN_LEFT+2, MARGIN_TOP+2, TILE_WIDTH*len(matrix[0])-4, TILE_WIDTH*len(matrix)-4))
             for col in range(8):
                 for row in range(14):
                     if matrix[row][col] == 0: continue
-                    color = COLORS[matrix[row][col]]
-                    x = col*TILE_WIDTH+MARGIN_LEFT
-                    y = row*TILE_WIDTH+MARGIN_TOP
-        
-                    pygame.draw.rect(screen, color, (x+2, y+2, TILE_WIDTH-4, TILE_WIDTH-4))
-                    text = font.render(str(virus_pill[row][col]), True, (255, 255, 255))
-                    screen.blit(text, (x+2, y+2))
-        
+                    #color = COLORS[matrix[row][col]]
+                    x = col*TILE_WIDTH+MARGIN_LEFT + 100 - 12
+                    y = row*TILE_WIDTH+MARGIN_TOP + 80
+                    screen.blit(COLORS[(matrix[row][col], virus_pill[row][col])],(x+2, y+2))
+                    #pygame.draw.rect(screen, color, (x+2, y+2, TILE_WIDTH-4, TILE_WIDTH-4))
+                    text = font.render('Highscore: ' + str(highscore), True, (255, 255, 255))
+                    screen.blit(text, (600, 200))
+                    text = font.render('Score: ' + str(score), True, (255, 255, 255))
+                    screen.blit(text, (600, 220))
             #desenhar primeiro círculo
-            x = player_col_1*TILE_WIDTH+MARGIN_LEFT
-            y = player_row_1*TILE_WIDTH+MARGIN_TOP
-            pygame.draw.circle(screen, COLORS[player_color_1], (x+TILE_WIDTH//2, y+TILE_WIDTH//2), TILE_WIDTH//2)
+            x = player_col_1*TILE_WIDTH+MARGIN_LEFT + 100 - 12
+            y = player_row_1*TILE_WIDTH+MARGIN_TOP  + 80
+            #pygame.draw.circle(screen, COLORS[player_color_1], (x+TILE_WIDTH//2, y+TILE_WIDTH//2), TILE_WIDTH//2)
+            screen.blit(COLORS[(player_color_1, player_state_1)], (x+2, y+2))
             #desenhar segundo círculo
-            x = (player_col_2)*TILE_WIDTH+MARGIN_LEFT
-            y = player_row_2 *TILE_WIDTH+MARGIN_TOP
-            pygame.draw.circle(screen, COLORS[player_color_2], (x+TILE_WIDTH//2, y+TILE_WIDTH//2), TILE_WIDTH//2)
+            x = (player_col_2)*TILE_WIDTH+MARGIN_LEFT + 100 -12
+            y = player_row_2 *TILE_WIDTH+MARGIN_TOP + 80
+            screen.blit(COLORS[(player_color_2, player_state_2)], (x+2, y+2))
+            #pygame.draw.circle(screen, COLORS[player_color_2], (x+TILE_WIDTH//2, y+TILE_WIDTH//2), TILE_WIDTH//2)
             
         
             # NEXT
-            x = MARGIN_LEFT + len(matrix[0])*TILE_WIDTH + 10
+            x = MARGIN_LEFT + len(matrix[0])*TILE_WIDTH + 100 - 11
             y = MARGIN_TOP + 10
-            pygame.draw.circle(screen, COLORS[next_player_color_1], (x+TILE_WIDTH//2, y+TILE_WIDTH//2), TILE_WIDTH//2)
+            #pygame.draw.circle(screen, COLORS[next_player_color_1], (x+TILE_WIDTH//2, y+TILE_WIDTH//2), TILE_WIDTH//2)
+            screen.blit(COLORS[(next_player_color_1, "l")], (x+2, y+2, TILE_WIDTH-4, TILE_WIDTH-4))
             #desenhar segundo círculo
-            x = MARGIN_LEFT + len(matrix[0])*TILE_WIDTH + 10 + TILE_WIDTH
-            pygame.draw.circle(screen, COLORS[next_player_color_2], (x+TILE_WIDTH//2, y+TILE_WIDTH//2), TILE_WIDTH//2)
+            x = MARGIN_LEFT + len(matrix[0])*TILE_WIDTH + 10 + TILE_WIDTH +80
+            screen.blit(COLORS[(next_player_color_2, "r")], (x+2, y+2, TILE_WIDTH-4, TILE_WIDTH-4))
+            #pygame.draw.circle(screen, COLORS[next_player_color_2], (x+TILE_WIDTH//2, y+TILE_WIDTH//2), TILE_WIDTH//2)
         
         if win == True:
             text = font.render("YOU WIN! New game? Press enter", True, (255, 255, 0))
@@ -405,6 +481,10 @@ while running:
         if lose == True:
             text = font.render("YOU LOSE :( New game? Press enter", True, (255, 255, 0))
             screen.blit(text, (200, 350))
+        #if pause:
+        #  pygame.draw.rect(surface, color, rect)
     pygame.display.flip()
 
+with open('highscore.txt', 'w') as file:
+    file.write(str(highscore))
 pygame.quit()
