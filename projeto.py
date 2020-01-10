@@ -472,7 +472,7 @@ while running:
         for row in range(14):
              #análise de linhas
             if col < 8-3:
-                if matrix[row][col] == matrix[row][col+1] == matrix[row][col+2] == matrix[row][col+3] != 0 and (virus_pill[row][col] != "v" or virus_pill[row][col+1] != "v" or virus_pill[row][col+2] != "v" and virus_pill[row][col+3] != "v"):
+                if matrix[row][col] == matrix[row][col+1] == matrix[row][col+2] == matrix[row][col+3] != 0 and (virus_pill[row][col] != "v" or virus_pill[row][col+1] != "v" or virus_pill[row][col+2] != "v" or virus_pill[row][col+3] != "v"):
                     all_changes.append((row, col))
                     all_changes.append((row, col+1))
                     all_changes.append((row, col+2))
@@ -488,7 +488,7 @@ while running:
                                     next_same_row = False
              #análise de colunas
             if row < 14-3:
-                if matrix[row][col] == matrix[row+1][col] == matrix[row+2][col] == matrix[row+3][col] != 0 and (virus_pill[row][col] != "v" or virus_pill[row+1][col] != "v" or virus_pill[row+2][col] != "v" and virus_pill[row+3][col] != "v"):
+                if matrix[row][col] == matrix[row+1][col] == matrix[row+2][col] == matrix[row+3][col] != 0 and (virus_pill[row][col] != "v" or virus_pill[row+1][col] != "v" or virus_pill[row+2][col] != "v" or virus_pill[row+3][col] != "v"):
                     all_changes.append((row,col))
                     all_changes.append((row +1, col))
                     all_changes.append((row +2, col))
