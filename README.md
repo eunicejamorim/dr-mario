@@ -24,10 +24,6 @@ Com a evolução da tecnologia, os comprimidos entram automáticamente no goblé
 Podes colocar o jogo em pausa carregando no ESC.
 Boa sorte!
 #### UI
-Semelhante a:
-
-![UI](https://github.com/eunicejamorim/dr-mario/blob/master/NES_01.gif)
-
 ![CAPA](https://github.com/eunicejamorim/dr-mario/blob/master/capa_print.png)
 ![menu](https://github.com/eunicejamorim/dr-mario/blob/master/menu_print.png)
 ![jogo](https://github.com/eunicejamorim/dr-mario/blob/master/jogo_print.png)
