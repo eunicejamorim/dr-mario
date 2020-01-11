@@ -181,8 +181,8 @@ v_s_l = True
 v_s_m = False
 v_s_h = False
 speed_selection = False
-s_p_l = True
-s_p_m = False
+s_p_l = False
+s_p_m = True
 s_p_h = False
 
 ##### TEXTO
@@ -206,7 +206,6 @@ while running:
                 if event.key == pygame.K_RETURN:
                     menu_selec = True
                     capa = False
-                    print(menu_selec)
         if menu_selec:
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_SPACE:
@@ -339,8 +338,8 @@ while running:
                         v_s_m = False
                         v_s_h = False
                         speed_selection = False
-                        s_p_l = True
-                        s_p_m = False
+                        s_p_l = False
+                        s_p_m = True
                         s_p_h = False
                         change_matrix = False
 
